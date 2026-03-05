@@ -53,25 +53,22 @@ def assess_goal_feasibility(
         }
 
 
+def calculate_goal_progress(current_savings: float, goal_amount: float) -> float:
+    """Calculate percentage progress toward the goal amount."""
+    if goal_amount <= 0:
+        return 0.0
+    progress = (current_savings / goal_amount) * 100
+    return min(round(progress, 2), 100.0)
+
 def get_goal_plan(
-    goal: str, goal_amount: float, years: float, monthly_savings: float
+    goal: str, goal_amount: float, years: float, monthly_savings: float, current_savings: float = 0
 ) -> dict:
     """
     Build a complete goal plan summary.
-
-    Parameters
-    ----------
-    goal            : Description of the financial goal
-    goal_amount     : Target amount in ₹
-    years           : Time horizon in years
-    monthly_savings : User's current monthly savings (income − expenses)
-
-    Returns
-    -------
-    dict with goal details, required savings, and feasibility assessment.
     """
     required_monthly = calculate_monthly_goal_savings(goal_amount, years)
     feasibility = assess_goal_feasibility(monthly_savings, required_monthly)
+    progress = calculate_goal_progress(current_savings, goal_amount)
 
     return {
         "goal": goal,
@@ -80,5 +77,6 @@ def get_goal_plan(
         "total_months": int(years * 12),
         "required_monthly_savings": required_monthly,
         "current_monthly_savings": monthly_savings,
+        "goal_progress": progress,
         **feasibility,
     }

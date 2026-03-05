@@ -34,28 +34,39 @@ def calculate_debt_to_income(debt: float, income: float) -> float:
     return round((debt / income) * 100, 2)
 
 
+def calculate_health_score(income: float, expenses: float, debt: float, savings_rate: float) -> int:
+    """
+    Calculate a financial health score out of 100.
+    - Savings Rate (40%): >20% is ideal
+    - Debt-to-Income (30%): <30% is ideal
+    - Emergency Fund Base (30%): (Simulated here by savings/expenses ratio)
+    """
+    score = 0
+    
+    # Savings Rate component (Max 40)
+    score += min(max(savings_rate * 2, 0), 40)
+    
+    # Debt-to-Income component (Max 30)
+    dti = calculate_debt_to_income(debt, income)
+    score += max(30 - (dti / 2), 0)
+    
+    # Expense component (Max 30)
+    if income > 0:
+        expense_ratio = (expenses / income) * 100
+        score += max(30 - (expense_ratio / 3), 0)
+    
+    return int(min(max(score, 0), 100))
+
 def get_financial_summary(
     income: float, expenses: float, savings: float, debt: float
 ) -> dict:
     """
     Generate a comprehensive financial summary dictionary.
-
-    Parameters
-    ----------
-    income   : Monthly income
-    expenses : Monthly expenses
-    savings  : Current total savings
-    debt     : Existing total debt
-
-    Returns
-    -------
-    dict with keys:
-        monthly_savings, savings_rate, debt_to_income,
-        current_savings, total_debt, monthly_income, monthly_expenses
     """
     monthly_savings = calculate_monthly_savings(income, expenses)
     savings_rate = calculate_savings_rate(income, expenses)
     debt_to_income = calculate_debt_to_income(debt, income)
+    health_score = calculate_health_score(income, expenses, debt, savings_rate)
 
     return {
         "monthly_income": income,
@@ -65,4 +76,5 @@ def get_financial_summary(
         "debt_to_income": debt_to_income,
         "current_savings": savings,
         "total_debt": debt,
+        "health_score": health_score
     }
