@@ -61,22 +61,28 @@ def calculate_goal_progress(current_savings: float, goal_amount: float) -> float
     return min(round(progress, 2), 100.0)
 
 def get_goal_plan(
-    goal: str, goal_amount: float, years: float, monthly_savings: float, current_savings: float = 0
+    goal: str, goal_amount: float, years: float, monthly_savings: float, current_savings: float = 0.0
 ) -> dict:
     """
     Build a complete goal plan summary.
     """
-    required_monthly = calculate_monthly_goal_savings(goal_amount, years)
-    feasibility = assess_goal_feasibility(monthly_savings, required_monthly)
-    progress = calculate_goal_progress(current_savings, goal_amount)
+    # Defensive type conversion
+    g_amt = float(goal_amount)
+    y = float(years)
+    m_sav = float(monthly_savings)
+    c_sav = float(current_savings)
+
+    required_monthly = calculate_monthly_goal_savings(g_amt, y)
+    feasibility = assess_goal_feasibility(m_sav, required_monthly)
+    progress = calculate_goal_progress(c_sav, g_amt)
 
     return {
-        "goal": goal,
-        "goal_amount": goal_amount,
-        "time_horizon_years": years,
-        "total_months": int(years * 12),
+        "goal": str(goal),
+        "goal_amount": g_amt,
+        "time_horizon_years": y,
+        "total_months": int(y * 12),
         "required_monthly_savings": required_monthly,
-        "current_monthly_savings": monthly_savings,
+        "current_monthly_savings": m_sav,
         "goal_progress": progress,
         **feasibility,
     }

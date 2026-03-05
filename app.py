@@ -130,7 +130,7 @@ if st.session_state.show_results:
 
     # Calculations
     summary = get_financial_summary(income, expenses, savings, debt)
-    plan = get_goal_plan(goal_text, goal_amt, years, summary["monthly_savings"], savings)
+    plan = get_goal_plan(goal_text, goal_amt, years, summary["monthly_savings"], current_savings=savings)
     
     # 1. Financial Health Score & Top Metrics
     st.markdown('<div class="section-title">✨ Financial Health Overview</div>', unsafe_allow_html=True)
